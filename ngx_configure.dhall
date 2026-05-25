@@ -1,18 +1,10 @@
 let Text/concatSep =
-      https://prelude.dhall-lang.org/v23.1.0/Text/concatSep
+      https://prelude.dhall-lang.org/v23.1.0/Text/concatSep.dhall
         sha256:e4401d69918c61b92a4c0288f7d60a6560ca99726138ed8ebc58dca2cd205e58
 
 let List/map =
-      https://prelude.dhall-lang.org/v23.1.0/List/map
+      https://prelude.dhall-lang.org/v23.1.0/List/map.dhall
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
-
-let addModule
-    : Text
-    = "add-module"
-
-let addDynModule
-    : Text
-    = "add-dynamic-module"
 
 let Option =
       < Plain : { value : Text } | Compound : { key : Text, value : Text } >
@@ -22,15 +14,17 @@ let renderEnv = \(value : Text) -> \(var : Text) -> var ++ "=" ++ value
 let renderOption =
       \(path : Text) ->
       \(opt : Option) ->
-        merge
-          { Plain = \(popt : { value : Text }) -> "--" ++ popt.value
-          , Compound =
-              \(copt : { key : Text, value : Text }) ->
-                let modulePath = path ++ "/" ++ copt.value
+        let longOpt = "--"
 
-                in  "--" ++ copt.key ++ "='" ++ modulePath ++ "'"
-          }
-          opt
+        in  merge
+              { Plain = \(popt : { value : Text }) -> longOpt ++ popt.value
+              , Compound =
+                  \(copt : { key : Text, value : Text }) ->
+                    let modulePath = path ++ "/" ++ copt.value
+
+                    in  longOpt ++ copt.key ++ "='" ++ modulePath ++ "'"
+              }
+              opt
 
 let vars =
       let envList =
@@ -46,6 +40,10 @@ let vars =
 
 let opts =
       \(path : Text) ->
+        let addModule = "add-module"
+
+        let addDynModule = "add-dynamic-module"
+
         let textOpts =
               List/map
                 Option
