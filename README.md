@@ -23,4 +23,4 @@ approach to struggle with this difficulty.
 #### Cache Nginx configuration options
 
 Run `dhall hash --cache --file ngx_configure.dhall` if you want to cache the
-configuration options on future runs of `./ngx_configure.sh $HOME/devel`.
+configuration function for future runs of `./ngx_configure.sh`.
