@@ -4,7 +4,7 @@ Adding modules is only available via command-line options `--add-module` or
 to achieve reproducible builds everywhere I build Nginx. Here is a very simple
 approach to struggle with this difficulty.
 
-### Requirements
+#### Requirements
 
 - [*dhall-to-bash*](https://github.com/dhall-lang/dhall-haskell/tree/main/dhall-bash)
   executable file. [*Dhall*](https://dhall-lang.org/) is a typed configuration
@@ -14,14 +14,13 @@ approach to struggle with this difficulty.
   `$HOME/devel`, before building Nginx. Absence or unsatisfied dependencies of a
   module will make `./configure` fail.
 
-### Configure and build Nginx
+#### Configure and build Nginx
 
 - Put *ngx_configure.sh* in the directory with Nginx sources.
 - Run `./ngx_configure.sh $HOME/devel` from that directory.
 - If the configuration was successful, run `make`.
 
-### Cache Nginx configuration options
+#### Cache Nginx configuration options
 
-Run `SRC_MODULE_PATH=$HOME/devel dhall hash --cache --file ngx_configure.dhall`
-if you want to cache the configuration options on future runs of
-`./ngx_configure.sh $HOME/devel`.
+Run `dhall hash --cache --file ngx_configure.dhall` if you want to cache the
+configuration options on future runs of `./ngx_configure.sh $HOME/devel`.

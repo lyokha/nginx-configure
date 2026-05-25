@@ -2,8 +2,6 @@ let Text/concatSep =
       https://prelude.dhall-lang.org/v23.1.0/Text/concatSep
         sha256:e4401d69918c61b92a4c0288f7d60a6560ca99726138ed8ebc58dca2cd205e58
 
-let srcModulePath = env:SRC_MODULE_PATH as Text ? "."
-
 let addModule
     : Text
     = "add-module"
@@ -25,7 +23,7 @@ let toText =
           }
           opt
 
-let toAbsPath = \(path : Text) -> srcModulePath ++ "/" ++ path
+let toModulePath = \(path : Text) -> \(module : Text) -> path ++ "/" ++ module
 
 let toEnv = \(var : Text) -> var ++ "=" ++ "yes"
 
@@ -37,68 +35,82 @@ let vars =
         ]
 
 let opts =
-      Text/concatSep
-        " "
-        [ toText (Option.Plain { value = "with-http_ssl_module" })
-        , toText (Option.Plain { value = "with-http_stub_status_module" })
-        , toText
-            ( Option.Compound
-                { key = addModule, value = toAbsPath "echo-nginx-module" }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule
-                , value = toAbsPath "nginx-custom-counters-module"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule, value = toAbsPath "nginx-easy-context" }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule
-                , value = toAbsPath "nginx-combined-upstreams-module"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule, value = toAbsPath "nginx-haskell-module" }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule
-                , value = toAbsPath "nginx-haskell-module/aliases"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule
-                , value =
-                    toAbsPath
-                      "nginx-haskell-module/examples/dynamicUpstreams/nginx-upconf-module"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addDynModule
-                , value = toAbsPath "nginx-healthcheck-plugin"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addDynModule, value = toAbsPath "nginx-log-plugin" }
-            )
-        , toText
-            ( Option.Compound
-                { key = addDynModule
-                , value = toAbsPath "nginx-log-plugin/module"
-                }
-            )
-        , toText
-            ( Option.Compound
-                { key = addModule, value = toAbsPath "nginx-proxy-peer-host" }
-            )
-        ]
+      \(path : Text) ->
+        Text/concatSep
+          " "
+          [ toText (Option.Plain { value = "with-http_ssl_module" })
+          , toText (Option.Plain { value = "with-http_stub_status_module" })
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "echo-nginx-module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-custom-counters-module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-easy-context"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-combined-upstreams-module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-haskell-module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-haskell-module/aliases"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value =
+                      toModulePath
+                        path
+                        "nginx-haskell-module/examples/dynamicUpstreams/nginx-upconf-module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addDynModule
+                  , value = toModulePath path "nginx-healthcheck-plugin"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addDynModule
+                  , value = toModulePath path "nginx-log-plugin"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addDynModule
+                  , value = toModulePath path "nginx-log-plugin/module"
+                  }
+              )
+          , toText
+              ( Option.Compound
+                  { key = addModule
+                  , value = toModulePath path "nginx-proxy-peer-host"
+                  }
+              )
+          ]
 
-in  { vars, opts, all = { vars, opts } }
+let all = \(path : Text) -> { vars, opts = opts path }
+
+in  { vars, opts, all }
