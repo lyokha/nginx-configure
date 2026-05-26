@@ -22,7 +22,7 @@ SRC_MODULE_PATH=${1:-.}
 NGX_CONFIGURE_URL='https://raw.githubusercontent.com/lyokha/'`
     `'nginx-configure/master/ngx_configure.dhall'
 NGX_CONFIGURE_HASH='sha256:'`
-    `'fdbe17c2f18f5121f1ed1a211bef700e16300d0e672747a36bcf499e4f71b876'
+    `'c9577a462b0794dd0002ebd4e95d433d1afc64e98955354b5bd0c88ed60e422c'
 
 (
 cmd=$(dhall-to-bash --declare NGXOPTS <<< "`

@@ -6,7 +6,8 @@ let NameValuePair = { name : Text, value : Text }
 
 let Option = < Plain : Text | Compound : NameValuePair >
 
-let renderEnv = \(value : Text) -> \(var : Text) -> var ++ "=" ++ value
+let renderEnv =
+      \(cenv : NameValuePair) -> cenv.name ++ "='" ++ cenv.value ++ "'"
 
 let renderOption =
       \(path : Text) ->
@@ -24,13 +25,18 @@ let renderOption =
               opt
 
 let vars =
-      Text/concatMapSep
-        " "
-        Text
-        (renderEnv "yes")
-        [ "NGX_HTTP_CUSTOM_COUNTERS_PERSISTENCY"
-        , "NGX_HTTP_COMBINED_UPSTREAMS_PERSISTENT_UPSTRAND_INTERCEPT_CTX"
-        ]
+      let yes = "yes"
+
+      in  Text/concatMapSep
+            " "
+            NameValuePair
+            renderEnv
+            [ { name = "NGX_HTTP_CUSTOM_COUNTERS_PERSISTENCY", value = yes }
+            , { name =
+                  "NGX_HTTP_COMBINED_UPSTREAMS_PERSISTENT_UPSTRAND_INTERCEPT_CTX"
+              , value = yes
+              }
+            ]
 
 let opts =
       \(path : Text) ->
