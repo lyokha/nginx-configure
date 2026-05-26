@@ -2,8 +2,9 @@ let Text/concatMapSep =
       https://prelude.dhall-lang.org/v23.1.0/Text/concatMapSep.dhall
         sha256:c272aca80a607bc5963d1fcb38819e7e0d3e72ac4d02b1183b1afb6a91340840
 
-let Option =
-      < Plain : { value : Text } | Compound : { key : Text, value : Text } >
+let NameValuePair = { name : Text, value : Text }
+
+let Option = < Plain : Text | Compound : NameValuePair >
 
 let renderEnv = \(value : Text) -> \(var : Text) -> var ++ "=" ++ value
 
@@ -13,12 +14,12 @@ let renderOption =
         let longOpt = "--"
 
         in  merge
-              { Plain = \(popt : { value : Text }) -> longOpt ++ popt.value
+              { Plain = \(popt : Text) -> longOpt ++ popt
               , Compound =
-                  \(copt : { key : Text, value : Text }) ->
+                  \(copt : NameValuePair) ->
                     let modulePath = path ++ "/" ++ copt.value
 
-                    in  longOpt ++ copt.key ++ "='" ++ modulePath ++ "'"
+                    in  longOpt ++ copt.name ++ "='" ++ modulePath ++ "'"
               }
               opt
 
@@ -41,32 +42,35 @@ let opts =
               " "
               Option
               (renderOption path)
-              [ Option.Plain { value = "with-http_ssl_module" }
-              , Option.Plain { value = "with-http_stub_status_module" }
-              , Option.Compound { key = addModule, value = "echo-nginx-module" }
+              [ Option.Plain "with-http_ssl_module"
+              , Option.Plain "with-http_stub_status_module"
               , Option.Compound
-                  { key = addModule, value = "nginx-custom-counters-module" }
+                  { name = addModule, value = "echo-nginx-module" }
               , Option.Compound
-                  { key = addModule, value = "nginx-easy-context" }
+                  { name = addModule, value = "nginx-custom-counters-module" }
               , Option.Compound
-                  { key = addModule, value = "nginx-combined-upstreams-module" }
+                  { name = addModule, value = "nginx-easy-context" }
               , Option.Compound
-                  { key = addModule, value = "nginx-haskell-module" }
+                  { name = addModule
+                  , value = "nginx-combined-upstreams-module"
+                  }
               , Option.Compound
-                  { key = addModule, value = "nginx-haskell-module/aliases" }
+                  { name = addModule, value = "nginx-haskell-module" }
               , Option.Compound
-                  { key = addModule
+                  { name = addModule, value = "nginx-haskell-module/aliases" }
+              , Option.Compound
+                  { name = addModule
                   , value =
                       "nginx-haskell-module/examples/dynamicUpstreams/nginx-upconf-module"
                   }
               , Option.Compound
-                  { key = addDynModule, value = "nginx-healthcheck-plugin" }
+                  { name = addDynModule, value = "nginx-healthcheck-plugin" }
               , Option.Compound
-                  { key = addDynModule, value = "nginx-log-plugin" }
+                  { name = addDynModule, value = "nginx-log-plugin" }
               , Option.Compound
-                  { key = addDynModule, value = "nginx-log-plugin/module" }
+                  { name = addDynModule, value = "nginx-log-plugin/module" }
               , Option.Compound
-                  { key = addModule, value = "nginx-proxy-peer-host" }
+                  { name = addModule, value = "nginx-proxy-peer-host" }
               ]
 
 in  { vars, opts, all = \(path : Text) -> { vars, opts = opts path } }
