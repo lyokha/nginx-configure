@@ -1,9 +1,21 @@
 #!/bin/bash
 set -e
 
-if [ "$#" -lt 1 ]
-then
-    echo "NOTE: search source directories of modules in the current directory!"
+if [ $# -lt 1 ] ; then
+    echo "NOTE: search source directories of modules "`
+        `"in the current directory!" 1>&2
+fi
+
+if [ ! -x ./configure ] ; then
+    echo "ERROR: there is no configure script "`
+        `"in the current directory!" 1>&2
+    exit 1
+fi
+
+if ! ./configure --help | grep -qi nginx ; then
+    echo "ERROR: it looks like the current directory "`
+        `"is not a directory with Nginx sources!" 1>&2
+    exit 1
 fi
 
 SRC_MODULE_PATH=${1:-.}

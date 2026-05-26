@@ -7,20 +7,15 @@ approach to struggle with this difficulty.
 #### Requirements
 
 - [*dhall-to-bash*](https://github.com/dhall-lang/dhall-haskell/tree/main/dhall-bash)
-  executable file. [*Dhall*](https://dhall-lang.org/) is a typed configuration
-  language on steroids. Script *ngx_configure.dhall* contains all Nginx
+  executable file. [*Dhall*](https://dhall-lang.org/) is a typed programmable
+  configuration language. Script *ngx_configure.dhall* contains all Nginx
   configuration options needed.
-- Sources of the custom modules must have been put in a single directory, say
-  `$HOME/devel`, before building Nginx. Absence or unsatisfied dependencies of a
-  module will make `./configure` fail.
+- Sources of the custom modules listed in *ngx_configure.dhall* must have been
+  put in a single directory, say `$HOME/devel`, before building Nginx. Absence
+  or unsatisfied dependencies of a module will make `./configure` fail.
 
 #### Configure and build Nginx
 
-- Put *ngx_configure.sh* in the directory with Nginx sources.
-- Run `./ngx_configure.sh $HOME/devel` from that directory.
+- Put *ngx_configure.sh* in a directory listed in `$PATH`.
+- Run `ngx_configure.sh $HOME/devel` from the directory with Nginx sources.
 - If the configuration was successful, run `make`.
-
-#### Cache Nginx configuration options
-
-Run `dhall hash --cache --file ngx_configure.dhall` if you want to cache the
-configuration functions for future runs of `./ngx_configure.sh`.
