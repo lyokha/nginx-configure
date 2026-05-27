@@ -19,6 +19,7 @@ if ! ./configure --help | grep -qi nginx ; then
 fi
 
 SRC_MODULE_PATH=${1:-.}
+SRC_MODULE_PATH=${SRC_MODULE_PATH%/}
 NGX_CONFIGURE_URL='https://raw.githubusercontent.com/lyokha/'`
     `'nginx-configure/master/ngx_configure.dhall'
 NGX_CONFIGURE_HASH='sha256:'`
