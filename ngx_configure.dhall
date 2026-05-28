@@ -7,8 +7,7 @@ let NameValuePair = { name : Text, value : Text }
 let Option =
       < Plain : Text | Compound : NameValuePair | AddModule : NameValuePair >
 
-let renderEnv =
-      \(cenv : NameValuePair) -> cenv.name ++ "='" ++ cenv.value ++ "'"
+let renderEnv = \(var : NameValuePair) -> var.name ++ "='" ++ var.value ++ "'"
 
 let renderOption =
       \(path : Text) ->
@@ -29,24 +28,25 @@ let renderOption =
               opt
 
 let vars =
-      let yes = "yes"
+      let enableVar = \(name : Text) -> { name, value = "yes" }
 
       in  Text/concatMapSep
             " "
             NameValuePair
             renderEnv
-            [ { name = "NGX_HTTP_CUSTOM_COUNTERS_PERSISTENCY", value = yes }
-            , { name =
-                  "NGX_HTTP_COMBINED_UPSTREAMS_PERSISTENT_UPSTRAND_INTERCEPT_CTX"
-              , value = yes
-              }
+            [ enableVar "NGX_HTTP_CUSTOM_COUNTERS_PERSISTENCY"
+            , enableVar
+                "NGX_HTTP_COMBINED_UPSTREAMS_PERSISTENT_UPSTRAND_INTERCEPT_CTX"
             ]
 
 let opts =
       \(path : Text) ->
-        let addModule = "add-module"
+        let addModule =
+              \(value : Text) -> Option.AddModule { name = "add-module", value }
 
-        let addDynModule = "add-dynamic-module"
+        let addDynModule =
+              \(value : Text) ->
+                Option.AddModule { name = "add-dynamic-module", value }
 
         in  Text/concatMapSep
               " "
@@ -54,33 +54,18 @@ let opts =
               (renderOption path)
               [ Option.Plain "with-http_ssl_module"
               , Option.Plain "with-http_stub_status_module"
-              , Option.AddModule
-                  { name = addModule, value = "echo-nginx-module" }
-              , Option.AddModule
-                  { name = addModule, value = "nginx-custom-counters-module" }
-              , Option.AddModule
-                  { name = addModule, value = "nginx-easy-context" }
-              , Option.AddModule
-                  { name = addModule
-                  , value = "nginx-combined-upstreams-module"
-                  }
-              , Option.AddModule
-                  { name = addModule, value = "nginx-haskell-module" }
-              , Option.AddModule
-                  { name = addModule, value = "nginx-haskell-module/aliases" }
-              , Option.AddModule
-                  { name = addModule
-                  , value =
-                      "nginx-haskell-module/examples/dynamicUpstreams/nginx-upconf-module"
-                  }
-              , Option.AddModule
-                  { name = addDynModule, value = "nginx-healthcheck-plugin" }
-              , Option.AddModule
-                  { name = addDynModule, value = "nginx-log-plugin" }
-              , Option.AddModule
-                  { name = addDynModule, value = "nginx-log-plugin/module" }
-              , Option.AddModule
-                  { name = addModule, value = "nginx-proxy-peer-host" }
+              , addModule "echo-nginx-module"
+              , addModule "nginx-custom-counters-module"
+              , addModule "nginx-easy-context"
+              , addModule "nginx-combined-upstreams-module"
+              , addModule "nginx-haskell-module"
+              , addModule "nginx-haskell-module/aliases"
+              , addModule
+                  "nginx-haskell-module/examples/dynamicUpstreams/nginx-upconf-module"
+              , addDynModule "nginx-healthcheck-plugin"
+              , addDynModule "nginx-log-plugin"
+              , addDynModule "nginx-log-plugin/module"
+              , addModule "nginx-proxy-peer-host"
               ]
 
 in  { vars, opts, all = \(path : Text) -> { vars, opts = opts path } }
