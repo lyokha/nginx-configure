@@ -1,9 +1,18 @@
 #!/bin/bash
 set -e
 
-if [ $# -lt 1 ] ; then
-    echo "NOTE: search source directories of modules "`
-        `"in the current directory!" 1>&2
+usage() {
+    echo "Usage: ${0##*/} <path-to-source-directories-of-modules>"
+}
+
+if [ $# -ne 1 ] ; then
+    usage
+    exit 1
+elif [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+    usage
+    exit 0
+else
+    SRC_MODULE_PATH=$(realpath -e "${1:-.}")
 fi
 
 if [ ! -x ./configure ] ; then
@@ -18,7 +27,6 @@ if ! ./configure --help | grep -qi nginx ; then
     exit 1
 fi
 
-SRC_MODULE_PATH=$(realpath -e "${1:-.}")
 NGX_CONFIGURE_URL='https://raw.githubusercontent.com/lyokha/'`
     `'nginx-configure/master/ngx_configure.dhall'
 NGX_CONFIGURE_HASH='sha256:'`
